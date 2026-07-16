@@ -9,7 +9,7 @@
     <style>
         /* --- ส่วนของการตกแต่งความสวยงาม (CSS) --- */
         body {
-            background-color: #0b0e14; /* สีพื้นหลังโทนเข้ม */
+            background-color: #0b0e14;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -35,11 +35,11 @@
         }
 
         .title {
-            color: #00f2fe; /* สีฟ้านีออน */
+            color: #00f2fe;
             font-size: 24px;
             font-weight: bold;
             margin: 0 0 5px 0;
-            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5); /* เอฟเฟกต์เรืองแสง */
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
             letter-spacing: 2px;
         }
 
@@ -69,7 +69,7 @@
         }
 
         .channel-info i {
-            color: #8b949e; /* สีไอคอน */
+            color: #8b949e;
             width: 20px;
             text-align: center;
         }
@@ -113,13 +113,14 @@
         }
 
         input:checked + .slider {
-            background-color: #00f2fe; /* สีปุ่มตอนเปิด */
+            background-color: #00f2fe;
         }
 
         input:checked + .slider:before {
-            transform: translateX(24px); /* เลื่อนปุ่มไปทางขวา */
+            transform: translateX(24px);
         }
 
+        /* ส่วนตกแต่งเครดิตผู้พัฒนาด้านล่างสุด */
         .footer {
             text-align: center;
             margin-top: 40px;
@@ -197,7 +198,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // 1. ตั้งค่า Firebase ของคุณที่นี่ (นำข้อมูลมาจาก Project Settings ของ Firebase)
+        // อย่าลืมนำข้อมูล Config จาก Firebase ของคุณมาใส่ตรงนี้นะครับ
         const firebaseConfig = {
             apiKey: "ใส่_API_KEY_ของคุณที่นี่",
             authDomain: "ใส่_PROJECT_ID.firebaseapp.com",
@@ -208,22 +209,14 @@
             appId: "ใส่_APP_ID"
         };
 
-        // 2. เริ่มต้นการเชื่อมต่อ Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-
-        // 3. กำหนดตัวแปรสำหรับช่องต่างๆ
         const channels = ['D1', 'D2', 'D5', 'D6'];
 
-        // 4. ฟังก์ชันสำหรับอัปเดตข้อมูลขึ้น Firebase เมื่อมีการกดสวิตช์บนเว็บ
         function updateFirebase(channel) {
-            // เช็คว่าสวิตช์นั้นถูกเปิดอยู่ (true) หรือปิดอยู่ (false)
             const isChecked = document.getElementById(channel).checked;
-            
-            // แปลงสถานะเป็นเลข 1 (เปิด) และ 0 (ปิด) เพื่อให้ NodeMCU อ่านค่าง่ายๆ
             const valueToSend = isChecked ? 1 : 0; 
 
-            // สั่งอัปเดตค่าไปที่ Database Path: SmartHome/ช่องนั้นๆ
             database.ref('SmartHome/' + channel).set(valueToSend)
                 .then(() => {
                     console.log(channel + ' อัปเดตเป็น ' + valueToSend + ' สำเร็จ');
@@ -233,15 +226,10 @@
                 });
         }
 
-        // 5. ฟังก์ชันคอยรับฟังการเปลี่ยนแปลงจาก Firebase (Realtime Sync)
-        // เพื่อให้ถ้าสวิตช์ถูกสั่งเปิดจาก NodeMCU หรือแอปอื่น หน้าเว็บจะเปลี่ยนตามทันที
         channels.forEach(channel => {
             database.ref('SmartHome/' + channel).on('value', (snapshot) => {
                 const val = snapshot.val();
-                
-                // หากพบค่าในฐานข้อมูล
                 if (val !== null) {
-                    // ถ้าค่าเป็น 1 ให้ปรับสวิตช์หน้าเว็บเป็นเปิด (checked = true)
                     document.getElementById(channel).checked = (val === 1);
                 }
             });
